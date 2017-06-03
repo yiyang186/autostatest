@@ -1,0 +1,109 @@
+import numpy as np 
+from scipy.stats import chi2
+from scipy.stats import t
+from scipy.stats import norm
+from scipy.stats import skew
+from scipy.stats import kurtosis
+from scipy.stats import f
+
+import matplotlib.pyplot as plt
+
+import utils
+
+def t_1sample_base(n, m, s, mu0):
+    s_SE = s /  np.sqrt(n)
+    _t = np.abs(m - mu0) / s_SE
+    _v = n - 1
+    _p = t.sf(_t, _v)
+    return _t, _v, _p
+
+def t_1sample(x, mu0):
+    n = x.size
+    m = x.mean()
+    s = x.std()
+    return t_1sample_base(n, m, s)
+
+def chi2_rxc(xtab, verbose=1):
+    if xtab.shape[0] < 2 or xtab.shape[1] < 2:
+        print("ERROR: 输入格式错误！！！")
+        exit()
+
+    n = xtab.sum()
+    nc = xtab.sum(axis=0)
+    nr = xtab.sum(axis=1)
+    T = ((np.ones_like(xtab) * nc).T * nr).T / n
+    _chi2 = ((xtab - T) ** 2 / T).sum()
+    _df = (xtab.shape[0] - 1) * (xtab.shape[1] - 1)
+
+    if n < 40 or (T < 1).sum() > 0:
+        print("ERROR: 样本过少或理论频数过小，请调整数据或者使用Fisher确切概率法！！！")
+        exit()
+
+    if xtab.shape == (2, 2):
+        if (T < 5).sum() > 0:
+            _chi2 = ((np.abs(xtab - T) - n / 2) ** 2 / T).sum()
+            if verbose == 1:
+                print("已自动改用卡方校正公式，您也可自行使用Fisher确切概率法")
+    elif (T < 5).sum() > T.size / 5.0:
+        print("ERROR: 理论频数过小，请调整数据或者使用Fisher确切概率法！！！")
+        exit()
+
+    _p = chi2.sf(_chi2, _df)
+    return _chi2, _df, _p
+
+def t_paired(x1, x2):
+    if x1.size != x2.size:
+        print("ERROR: 两组样本量不等！！！")
+        exit()
+    d = x1 - x2
+    return t_paired_base(d)
+
+def t_paired_base(d):
+    n = d.size
+    d_sum = d.sum()
+    d2_sum = (d ** 2).sum()
+    d_bar = d_sum / n
+    s_d = np.sqrt((d2_sum - d_sum**2/n) / (n-1))
+    s_SE = s_d / np.sqrt(n)
+    _t = d_bar / s_SE
+    _v = n - 1
+    _p = t.sf(_t, _v)
+    return _t, _v, _p
+
+def qqplot(x):
+    x = utils.type_check(x)
+    sigma = utils.sample_std(x)
+    x.sort()
+    qi = (x - x.mean()) / sigma
+
+    i = np.arange(x.size) + 1
+    ti = (i - 0.5) / x.size
+    pi = -norm.isf(ti)
+
+    line = [-4, 4]
+    plt.figure()
+    plt.scatter(pi, qi, s=25, marker='o')
+    plt.plot(line, line, lw=0.5, c='black')
+    plt.xlabel("t Quantiles")
+    plt.ylabel("Studentized Residuals")
+    plt.title("Q-Q Plot")
+    plt.show()
+
+def norm_moment(x):
+    n = x.size
+    g1 = skew(x)
+    g2 = kurtosis(x)
+    sigma_g1 = np.sqrt(6*n/(n-2)*(n-1)/(n+1)/(n+3))
+    sigma_g2 = np.sqrt(24*n/(n-3)*(n-1)/(n-2)*(n-1)/(n+3)/(n+5))
+    return norm.sf(g1 / sigma_g1, g2 / sigma_g2)
+
+def variance_homo_test(x1, x2):
+    if x1.var() < x2.var():
+        x1, x2 = x2, x1
+
+    _F = x1.var() / x2.var()
+    v1, v2 = x1.size-1, x2.size-1
+    _p = f.sf(_F, v1, v2)
+    return _F, _p
+
+
