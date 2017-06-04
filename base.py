@@ -57,7 +57,7 @@ def t_paired(x1, x2):
 
 def t_paired_base(d):
     n = d.size
-    d_sum = d.sum()
+    d_sum = d.sum() 
     d2_sum = (d ** 2).sum()
     d_bar = d_sum / n
     s_d = np.sqrt((d2_sum - d_sum**2/n) / (n-1))
@@ -67,17 +67,37 @@ def t_paired_base(d):
     _p = t.sf(_t, _v)
     return _t, _v, _p
 
-def two_way_equal_var(x1, x2):
-    n1, m1, var1 = x1.size, x1.mean(), x1.var()
-    n2, m2, var2 = x2.size, x2.mean(), x2.var()
-    return two_way_equal_var_base(n1, m1, var1, n2, m2, var2)
-
-def two_way_equal_var_base(n1, m1, var1, n2, m2, var2):
+def t_equal_var(n1, m1, var1, n2, m2, var2):
     temp = ((n1-1)*var1 + (n2-1)*var2) / (n1+n2-2) * (1/n1 + 1/n2)
     _t = (m1-m2) / np.sqrt(temp)
     _v = n1 + n2 - 2
     _p = t.sf(_t, _v)
-    return _t, _p
+    return _t, _v, _p
+
+def cochrancox(n1, m1, var1, n2, m2, var2, alpha=0.05):
+    v1, v2 = n1-1, n2-1
+    _t = (m1-m2) / np.sqrt(var1/n1 + var2/n2)
+    _t_av1 = t.isf(alpha/2, v1)
+    _t_av2 = t.isf(alpha/2, v2)
+    var1_SE, var2_SE = var1/n1, var2/n2
+    _t_a = (var1_SE*_t_av1 + var2_SE*_t_av2)/(var1_SE+var2_SE)
+    return _t, (v1, v2), _t_a
+
+def satterthwaite(n1, m1, var1, n2, m2, var2, alpha=0.05):
+    _t = (m1-m2) / np.sqrt(var1/n1 + var2/n2)
+    var1_SE, var2_SE = var1/n1, var2/n2
+    
+    _v = (var1_SE + var2_SE)**2 / (var1_SE**2/(n1-1) + var2_SE**2/(n2-1))
+    _p = t.sf(_t, _v)
+    return _t, _v, _p
+
+def welch(n1, m1, var1, n2, m2, var2, alpha=0.05):
+    _t = (m1-m2) / np.sqrt(var1/n1 + var2/n2)
+    var1_SE, var2_SE = var1/n1, var2/n2
+
+    _v = (var1_SE + var2_SE)**2 / (var1_SE**2/(n1+1) + var2_SE**2/(n2+1)) - 2
+    _p = t.sf(_t, _v)
+    return _t, _v, _p
 
 def norm_moment(x):
     n = x.size
@@ -85,7 +105,7 @@ def norm_moment(x):
     g2 = kurtosis(x)
     sigma_g1 = np.sqrt(6*n/(n-2)*(n-1)/(n+1)/(n+3))
     sigma_g2 = np.sqrt(24*n/(n-3)*(n-1)/(n-2)*(n-1)/(n+3)/(n+5))
-    return norm.sf(g1 / sigma_g1, g2 / sigma_g2)
+    return norm.sf(g1/sigma_g1), norm.sf(g2/sigma_g2)
 
 def var_homo_test(x1, x2):
     return var_homo_test_base(x1.size, x1.var(), x2.var())
@@ -97,4 +117,6 @@ def var_homo_test_base(n, var1, var2):
     v1, v2 = n-1, n-1
     _p = f.sf(_F, v1, v2)
     return _F, _p
+
+
 

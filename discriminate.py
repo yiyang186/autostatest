@@ -18,6 +18,13 @@ def normality_test(x, alpha=0.1, verbose=1):
             print("尚不能内定这些样本不服从正态分布")
     return p_skew, p_kurtosis
 
+def isNormal(x, alpha=0.1):
+    p_skew, p_kurtosis = normality_test(x, alpha=alpha, verbose=0)
+    if p_skew < alpha and p_kurtosis < alpha:
+        return False
+    else:
+        return True
+
 def var_homogeneity(x1, x2, alpha=0.1, verbose=1):
     x1 = utils.type_check(x1)
     x2 = utils.type_check(x2)
@@ -31,6 +38,13 @@ def var_homogeneity(x1, x2, alpha=0.1, verbose=1):
         else:
             print("p >= alpha, 差异无统计学意义，尚不能认定两组总体方差不等")
     return _F, _p
+
+def isVarHomo(x1, x2, alpha=0.1):
+    _F, _p = var_homogeneity(x1, x2, alpha=alpha, verbose=0)
+    if _p < alpha:
+        return False
+    else:
+        return True
 
 def qqplot(x):
     x = utils.type_check(x)

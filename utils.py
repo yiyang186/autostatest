@@ -28,6 +28,15 @@ def compare1(_p, alpha):
             print("p < {0}".format(alpha))
         print("变量间差异有统计学意义")
 
+def method_check(method, methods):
+    if method not in methods:
+        print("不支持这种方法：", method)
+        print("暂时只支持下列方法:")
+        for m in methods:
+            print(m)
+        exit()
+    return None
+
 def type_check(a):
     if type(a) == np.ndarray:
         return a 
