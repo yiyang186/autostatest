@@ -90,7 +90,13 @@ def test_var_homo():
     cr = (3.7746938775510217, 0.0028660061648581991)
     assert np.allclose(base.var_homo_test_base(20, 1.36**2, 0.7**2), cr)
     
+def test_2way_equalvar():
+    cr = (-0.64187792644640285, 0.73759706676185277)
+    ret = base.two_way_equal_var_base(20, 2.065, 3.0601**2, 20, 2.625, 2.4205**2)
+    assert np.allclose(ret, cr)
 
+
+######################################################################   
 # python path_to_test.py
 
 xtab_ms = np.array([
@@ -122,3 +128,4 @@ x1 = np.array([-0.7, -5.6, 2., 2.8, 0.7, 3.5, 4., 5.8, 7.1, -0.5, 2.5, -1.6, 1.7
 x2 = np.array([3.7, 6.5, 5., 5.2, 0.8, 0.2, 0.6, 3.4, 6.6, -1.1,
     6., 3.8, 2., 1.6, 2., 2.2, 1.2, 3.1, 1.7, -2])
 print(discriminate.var_homogeneity(x1, x2, alpha=0.1))
+# print(base.two_way_equal_var(x1, x2))

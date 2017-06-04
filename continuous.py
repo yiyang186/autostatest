@@ -17,4 +17,3 @@ def pair(x1, x2, alpha=0.05, verbose=1):
     if verbose == 1:
         utils.compare0(p, alpha)
     return t, v, p
-

@@ -67,6 +67,18 @@ def t_paired_base(d):
     _p = t.sf(_t, _v)
     return _t, _v, _p
 
+def two_way_equal_var(x1, x2):
+    n1, m1, var1 = x1.size, x1.mean(), x1.var()
+    n2, m2, var2 = x2.size, x2.mean(), x2.var()
+    return two_way_equal_var_base(n1, m1, var1, n2, m2, var2)
+
+def two_way_equal_var_base(n1, m1, var1, n2, m2, var2):
+    temp = ((n1-1)*var1 + (n2-1)*var2) / (n1+n2-2) * (1/n1 + 1/n2)
+    _t = (m1-m2) / np.sqrt(temp)
+    _v = n1 + n2 - 2
+    _p = t.sf(_t, _v)
+    return _t, _p
+
 def norm_moment(x):
     n = x.size
     g1 = skew(x)
