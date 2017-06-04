@@ -115,6 +115,13 @@ def test_welch():
     ret = base.welch(20, 1.46, 1.36**2, 20, 1.13, 0.7**2)
     assert np.allclose(ret, cr)
 
+def test_chi2_paired():
+    # "Medical Statistics", 3rd Edition, Example 7-3
+    cr = (5.7857142857142856, 1, 0.016156931261181322)
+    xtab = np.array([[11, 12], [2, 33]])
+    ret = discrete.chi2_paired(xtab)
+    assert np.allclose(ret, cr)
+
 ######################################################################   
 # python path_to_test.py
 
@@ -152,5 +159,5 @@ print("---------------")
 print(continuous.t_approx(x1, x2, alpha=0.05, method="CochranCox"))
 
 print("---------------")
-obs = np.array([[10, 10, 20], [20, 20, 20]])
-print(discrete.chi2_test(obs))
+xtab = np.array([[11, 12], [2, 33]])
+print(discrete.chi2_paired(xtab))

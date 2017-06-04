@@ -1,6 +1,5 @@
 import numpy as np 
 import pandas as pd
-from scipy.stats import chi2
 import scipy.stats as stats
 import utils
 import base
@@ -32,11 +31,11 @@ def chi2_trend_test(xtab, alpha=0.05, verbose=1):
     sb2 = lyy / lxx / n
     chi2_regression = b ** 2 / sb2
     df_regression = 1
-    p_regression = chi2.sf(chi2_regression, df_regression)
+    p_regression = stats.chi2.sf(chi2_regression, df_regression)
 
     chi2_deviation = chi2_total - chi2_regression
     df_deviation = df_total - df_regression
-    p_deviation = chi2.sf(chi2_deviation, df_deviation)
+    p_deviation = stats.chi2.sf(chi2_deviation, df_deviation)
 
     ret = np.array([
         [chi2_total, df_total, p_total],
@@ -68,6 +67,23 @@ def chi2_test(xtab, alpha=0.05, verbose=1):
         utils.compare1(_p, alpha)
             
     return _chi2, _df, _p
+
+def chi2_paired(xtab, alpha=0.05, verbose=1):
+    xtab = utils.type_check(xtab)
+    if xtab.shape != (2, 2):
+        raise IOError("配对卡方检验仅支持四格表资料！！！")
+
+    b, c = xtab[0, 1], xtab[1, 0]
+    b_c = b + c
+    if b_c >= 40:
+        _chi2 = (b-c)**2 / b_c
+    else:
+        _chi2 = (np.abs(b-c)-1)**2 / b_c
+    _p = stats.chi2.sf(_chi2, 1)
+
+    if verbose == 1:
+        utils.compare0(_p, alpha)
+    return _chi2, 1, _p
 
 def fisher_exact_prob(xtab, alpha=0.05):
     _o, _p = stats.fisher_exact(xtab)
