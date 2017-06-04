@@ -34,7 +34,7 @@ def test_CI():
         utils.CI_population_mean_base(200, 3.64, 1.20, ci=0.95), 
         corrected_result)
 
-def test_base_t():
+def test_t_one_way():
     """
     "Medical Statistics", 3rd Edition, Page 37, Bottom
     """
@@ -42,15 +42,16 @@ def test_base_t():
     assert np.isclose(
         base.t_1sample_base(36, 130.83, 25.74, 140)[-1], corrected_result)
 
+def test_t_pair():
     """
     "Medical Statistics", 3rd Edition, Example 3-6
     """
     corrected_result = (7.9259757210549608, 9, 1.1919761845463216e-05)
     x1 = np.array([0.84, 0.591, 0.674, 0.632, 0.687, 0.978, 0.75, 0.73, 1.2, 0.87])
     x2 = np.array([0.58, 0.509, 0.5, 0.316, 0.337, 0.517, 0.454, 0.512, 0.997, 0.506])
-    assert np.allclose(continuous.t_paired(x1, x2), corrected_result)
+    assert np.allclose(continuous.pair(x1, x2), corrected_result)
 
-def test_diff_chi2():
+def test_chi2():
     """
     "Medical Statistics", 3rd Edition, Example 7-1
     """
@@ -76,6 +77,20 @@ def test_trend_chi2():
        [  7.81417435e+00,   8.00000000e+00,   4.51829625e-01]])
     assert np.allclose(discrete.chi2_trend_test(xtab_ms, verbose=0), corrected_result)
 
+def test_var_homo():
+    """
+    "Medical Statistics", 3rd Edition, Example 3-11
+    """
+    cr = (1.5983101734517282, 0.157643797395044)
+    assert np.allclose(base.var_homo_test_base(20, 3.0601**2, 2.4205**2), cr)
+
+    """
+    "Medical Statistics", 3rd Edition, Example 3-12
+    """
+    cr = (3.7746938775510217, 0.0028660061648581991)
+    assert np.allclose(base.var_homo_test_base(20, 1.36**2, 0.7**2), cr)
+    
+
 # python path_to_test.py
 
 xtab_ms = np.array([
@@ -96,7 +111,7 @@ print(discrete.chi2_test(xtab_ms))
 print("---------------")
 x1 = np.array([0.84, 0.591, 0.674, 0.632, 0.687, 0.978, 0.75, 0.73, 1.2, 0.87])
 x2 = np.array([0.58, 0.509, 0.5, 0.316, 0.337, 0.517, 0.454, 0.512, 0.997, 0.506])
-print(continuous.t_paired(x1, x2))
+print(continuous.pair(x1, x2))
 
 # print("---------------")
 # x = np.array([42, 65, 75, 59, 57, 68, 55, 54, 71, 78])
@@ -106,4 +121,4 @@ print("---------------")
 x1 = np.array([-0.7, -5.6, 2., 2.8, 0.7, 3.5, 4., 5.8, 7.1, -0.5, 2.5, -1.6, 1.7, 3., 0.4, 4.5, 4.6, 2.5, 6., -1.4])
 x2 = np.array([3.7, 6.5, 5., 5.2, 0.8, 0.2, 0.6, 3.4, 6.6, -1.1,
     6., 3.8, 2., 1.6, 2., 2.2, 1.2, 3.1, 1.7, -2])
-print(discriminate.homogeneity_of_variance_test(x1, x2, alpha=0.1))
+print(discriminate.var_homogeneity(x1, x2, alpha=0.1))

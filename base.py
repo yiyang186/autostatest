@@ -75,13 +75,14 @@ def norm_moment(x):
     sigma_g2 = np.sqrt(24*n/(n-3)*(n-1)/(n-2)*(n-1)/(n+3)/(n+5))
     return norm.sf(g1 / sigma_g1, g2 / sigma_g2)
 
-def variance_homo_test(x1, x2):
-    if x1.var() < x2.var():
-        x1, x2 = x2, x1
+def var_homo_test(x1, x2):
+    return var_homo_test_base(x1.size, x1.var(), x2.var())
 
-    _F = x1.var() / x2.var()
-    v1, v2 = x1.size-1, x2.size-1
+def var_homo_test_base(n, var1, var2):
+    if var1 < var2:
+        var1, var2 = var2, var1
+    _F = var1 / var2
+    v1, v2 = n-1, n-1
     _p = f.sf(_F, v1, v2)
     return _F, _p
-
 

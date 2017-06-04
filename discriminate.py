@@ -18,10 +18,10 @@ def normality_test(x, alpha=0.1, verbose=1):
             print("尚不能内定这些样本不服从正态分布")
     return p_skew, p_kurtosis
 
-def homogeneity_of_variance_test(x1, x2, alpha=0.1, verbose=1):
+def var_homogeneity(x1, x2, alpha=0.1, verbose=1):
     x1 = utils.type_check(x1)
     x2 = utils.type_check(x2)
-    _F, _p = base.variance_homo_test(x1, x2)
+    _F, _p = base.var_homo_test(x1, x2)
 
     if verbose == 1:
         print("使用F-test检验方差齐性：")
