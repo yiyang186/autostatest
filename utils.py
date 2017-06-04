@@ -30,11 +30,10 @@ def compare1(_p, alpha):
 
 def method_check(method, methods):
     if method not in methods:
-        print("不支持这种方法：", method)
         print("暂时只支持下列方法:")
         for m in methods:
             print(m)
-        exit()
+        raise NotImplementedError("不支持这种方法：{0}".format(method))
     return None
 
 def type_check(a):
@@ -44,8 +43,7 @@ def type_check(a):
     try:
         a = np.array(a)
     except:
-        print("ERROR: 请输入numpy数组或列表!!!")
-        exit()
+        raise IOError("ERROR: 请输入numpy数组或列表!!!")
     return a
 
 def sample_std(x):

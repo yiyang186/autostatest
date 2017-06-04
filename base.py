@@ -22,8 +22,7 @@ def t_1sample(x, mu0):
 
 def chi2_rxc(xtab, verbose=1):
     if xtab.shape[0] < 2 or xtab.shape[1] < 2:
-        print("ERROR: 输入格式错误！！！")
-        exit()
+        raise IOError("ERROR: 输入格式错误！！！")
 
     n = xtab.sum()
     nc = xtab.sum(axis=0)
@@ -33,8 +32,7 @@ def chi2_rxc(xtab, verbose=1):
     _df = (xtab.shape[0] - 1) * (xtab.shape[1] - 1)
 
     if n < 40 or (T < 1).sum() > 0:
-        print("ERROR: 样本过少或理论频数过小，请调整数据或者使用Fisher确切概率法！！！")
-        exit()
+        raise ValueError("ERROR: 样本过少或理论频数过小，请调整数据或者使用Fisher确切概率法！！！")
 
     if xtab.shape == (2, 2):
         if (T < 5).sum() > 0:
@@ -42,16 +40,15 @@ def chi2_rxc(xtab, verbose=1):
             if verbose == 1:
                 print("已自动改用卡方校正公式，您也可自行使用Fisher确切概率法")
     elif (T < 5).sum() > T.size / 5.0:
-        print("ERROR: 理论频数过小，请调整数据或者使用Fisher确切概率法！！！")
-        exit()
+        raise ValueError("ERROR: 理论频数过小，请调整数据或者使用Fisher确切概率法！！！")
 
     _p = chi2.sf(_chi2, _df)
     return _chi2, _df, _p
 
 def t_paired(x1, x2):
     if x1.size != x2.size:
-        print("ERROR: 两组样本量不等！！！")
-        exit()
+        raise IOError("ERROR: 两组样本量不等！！！")
+
     d = x1 - x2
     return t_paired_base(d)
 
