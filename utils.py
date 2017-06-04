@@ -5,9 +5,15 @@ from scipy.stats import norm
 def compare0(_p, alpha):
     print("p = {0}, alpha = {1}".format(_p, alpha))
     if _p >= alpha:
-        print("p >= alpha, 差异无统计学意义")
+        print("p >= {0}".format(alpha))
+        print("差异无统计学意义")
     else:
-        print("p < alpha, 差异有统计学意义")
+        if _p > alpha * 0.4:
+            print("{0} < p < {1}".format(0.4*alpha, alpha))
+        else:
+            print("p < {0}".format(alpha))
+        print("差异有统计学意义")
+        
 
 def compare1(_p, alpha):
     print("p = {0}, alpha = {1}".format(_p, alpha))
@@ -16,7 +22,11 @@ def compare1(_p, alpha):
     elif np.abs(_p - alpha) < alpha / 10.0:
         print("p=alpha, 请使用Fisher确切概率法")
     else:
-        print("p < alpha, 变量间差异有统计学意义")
+        if _p > alpha * 0.4:
+            print("{0} < p < {1}".format(0.4*alpha, alpha))
+        else:
+            print("p < {0}".format(alpha))
+        print("变量间差异有统计学意义")
 
 def type_check(a):
     if type(a) == np.ndarray:
