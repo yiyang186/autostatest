@@ -1,8 +1,8 @@
 import numpy as np 
-import pandas as pd 
+import pandas as pd
 from scipy.stats import chi2
-
-import diff
+import utils
+import base
 
 def chi2_trend_test(xtab, alpha=0.05, verbose=1):
     """
@@ -10,7 +10,7 @@ def chi2_trend_test(xtab, alpha=0.05, verbose=1):
     alpha: 
     """
 
-    chi2_total, df_total, p_total = diff.chi2(xtab, alpha=alpha, verbose=verbose)
+    chi2_total, df_total, p_total = chi2_test(xtab, alpha=alpha, verbose=verbose)
     if p_total >= alpha:
         return None
 
@@ -58,3 +58,12 @@ def chi2_trend_test(xtab, alpha=0.05, verbose=1):
         else:
             print("线性回归分量无统计学意义,不可认为变量间存在相关关系")
     return ret
+
+def chi2_test(xtab, alpha=0.05, verbose=1):
+    xtab = utils.type_check(xtab)
+    _chi2, _df, _p = base.chi2_rxc(xtab)
+    
+    if verbose == 1:
+        utils.compare1(_p, alpha)
+            
+    return _chi2, _df, _p

@@ -1,31 +1,8 @@
 import numpy as np 
 import base
 import utils
-
-def chi2(xtab, alpha=0.05, verbose=1):
-    xtab = utils.type_check(xtab)
-    _chi2, _df, _p = base.chi2_rxc(xtab)
-    
-    if verbose == 1:
-        utils.compare1(_p, alpha)
-            
-    return _chi2, _df, _p
-
-def t_1sample(x, mu0, alpha=0.05, verbose=1):
-    x = utils.type_check(x)
-    t, v, p = base.t_1sample(x, mu0)
-
-    if verbose == 1:
-        utils.compare0(p, alpha)
-    return p
-
-def t_paired(x1, x2, alpha=0.05, verbose=1):
-    x1, x2 = utils.type_check(x1), utils.type_check(x2)
-    t, v, p = base.t_paired(x1, x2)
-
-    if verbose == 1:
-        utils.compare0(p, alpha)
-    return t, v, p
+from scipy.stats import norm
+import matplotlib.pyplot as plt
 
 def normality_test(x, alpha=0.1, verbose=1):
     x = utils.type_check(x)
@@ -54,3 +31,22 @@ def homogeneity_of_variance_test(x1, x2, alpha=0.1, verbose=1):
         else:
             print("p >= alpha, 差异无统计学意义，尚不能认定两组总体方差不等")
     return _F, _p
+
+def qqplot(x):
+    x = utils.type_check(x)
+    sigma = utils.sample_std(x)
+    x.sort()
+    qi = (x - x.mean()) / sigma
+
+    i = np.arange(x.size) + 1
+    ti = (i - 0.5) / x.size
+    pi = -norm.isf(ti)
+
+    line = [-4, 4]
+    plt.figure()
+    plt.scatter(pi, qi, s=25, marker='o')
+    plt.plot(line, line, lw=0.5, c='black')
+    plt.xlabel("t Quantiles")
+    plt.ylabel("Studentized Residuals")
+    plt.title("Q-Q Plot")
+    plt.show()

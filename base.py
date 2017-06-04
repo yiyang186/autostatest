@@ -5,9 +5,6 @@ from scipy.stats import norm
 from scipy.stats import skew
 from scipy.stats import kurtosis
 from scipy.stats import f
-
-import matplotlib.pyplot as plt
-
 import utils
 
 def t_1sample_base(n, m, s, mu0):
@@ -69,25 +66,6 @@ def t_paired_base(d):
     _v = n - 1
     _p = t.sf(_t, _v)
     return _t, _v, _p
-
-def qqplot(x):
-    x = utils.type_check(x)
-    sigma = utils.sample_std(x)
-    x.sort()
-    qi = (x - x.mean()) / sigma
-
-    i = np.arange(x.size) + 1
-    ti = (i - 0.5) / x.size
-    pi = -norm.isf(ti)
-
-    line = [-4, 4]
-    plt.figure()
-    plt.scatter(pi, qi, s=25, marker='o')
-    plt.plot(line, line, lw=0.5, c='black')
-    plt.xlabel("t Quantiles")
-    plt.ylabel("Studentized Residuals")
-    plt.title("Q-Q Plot")
-    plt.show()
 
 def norm_moment(x):
     n = x.size

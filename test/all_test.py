@@ -4,8 +4,9 @@ parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0,parentdir)
 
 import numpy as np
-import trend
-import diff
+import continuous
+import discrete
+import discriminate
 import utils
 import base
 
@@ -47,7 +48,7 @@ def test_base_t():
     corrected_result = (7.9259757210549608, 9, 1.1919761845463216e-05)
     x1 = np.array([0.84, 0.591, 0.674, 0.632, 0.687, 0.978, 0.75, 0.73, 1.2, 0.87])
     x2 = np.array([0.58, 0.509, 0.5, 0.316, 0.337, 0.517, 0.454, 0.512, 0.997, 0.506])
-    assert np.allclose(diff.t_paired(x1, x2), corrected_result)
+    assert np.allclose(continuous.t_paired(x1, x2), corrected_result)
 
 def test_diff_chi2():
     """
@@ -58,7 +59,7 @@ def test_diff_chi2():
         [75, 21]
     ])
     corrected_result = (12.857069985717196, 1, 0.00033620659688458589)
-    assert np.allclose(diff.chi2(xtab), corrected_result)
+    assert np.allclose(discrete.chi2_test(xtab), corrected_result)
 
 def test_trend_chi2():
     """
@@ -73,4 +74,36 @@ def test_trend_chi2():
     corrected_result = np.array([[  7.14324940e+01,   9.00000000e+00,   7.96960419e-12],
        [  6.36183196e+01,   1.00000000e+00,   1.51018215e-15],
        [  7.81417435e+00,   8.00000000e+00,   4.51829625e-01]])
-    assert np.allclose(trend.chi2_trend_test(xtab_ms, verbose=0), corrected_result)
+    assert np.allclose(discrete.chi2_trend_test(xtab_ms, verbose=0), corrected_result)
+
+# python path_to_test.py
+
+xtab_ms = np.array([
+    [70, 22, 4, 2],
+    [27, 24, 9, 3],
+    [16, 23, 13, 7],
+    [9, 20, 15, 14]
+])
+ret = discrete.chi2_trend_test(xtab_ms, verbose=1)
+
+print("---------------")
+xtab_ms = np.array([
+    [99, 5],
+    [75, 21]
+])
+print(discrete.chi2_test(xtab_ms))
+
+print("---------------")
+x1 = np.array([0.84, 0.591, 0.674, 0.632, 0.687, 0.978, 0.75, 0.73, 1.2, 0.87])
+x2 = np.array([0.58, 0.509, 0.5, 0.316, 0.337, 0.517, 0.454, 0.512, 0.997, 0.506])
+print(continuous.t_paired(x1, x2))
+
+# print("---------------")
+# x = np.array([42, 65, 75, 59, 57, 68, 55, 54, 71, 78])
+# discriminate.qqplot(x)
+
+print("---------------")
+x1 = np.array([-0.7, -5.6, 2., 2.8, 0.7, 3.5, 4., 5.8, 7.1, -0.5, 2.5, -1.6, 1.7, 3., 0.4, 4.5, 4.6, 2.5, 6., -1.4])
+x2 = np.array([3.7, 6.5, 5., 5.2, 0.8, 0.2, 0.6, 3.4, 6.6, -1.1,
+    6., 3.8, 2., 1.6, 2., 2.2, 1.2, 3.1, 1.7, -2])
+print(discriminate.homogeneity_of_variance_test(x1, x2, alpha=0.1))
