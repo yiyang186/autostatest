@@ -150,3 +150,7 @@ print(discriminate.var_homogeneity(x1, x2, alpha=0.1))
 
 print("---------------")
 print(continuous.t_approx(x1, x2, alpha=0.05, method="CochranCox"))
+
+print("---------------")
+obs = np.array([[10, 10, 20], [20, 20, 20]])
+print(discrete.chi2_test(obs))

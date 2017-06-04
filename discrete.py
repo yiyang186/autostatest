@@ -1,6 +1,7 @@
 import numpy as np 
 import pandas as pd
 from scipy.stats import chi2
+import scipy.stats as stats
 import utils
 import base
 
@@ -67,3 +68,11 @@ def chi2_test(xtab, alpha=0.05, verbose=1):
         utils.compare1(_p, alpha)
             
     return _chi2, _df, _p
+
+def fisher_exact_prob(xtab, alpha=0.05):
+    _o, _p = stats.fisher_exact(xtab)
+
+    if verbose == 1:
+        utils.compare1(_p, alpha)
+
+    return _o, _p
